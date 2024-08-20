@@ -1,0 +1,12 @@
+services:
+  backend:
+    container_name: backend
+    image: aMain/backend:demo
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - sample-var=${sample-var}
+    ports:
+      - 8090:8090
+    restart: always
