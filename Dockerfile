@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-jdk-alpine as build-stage
-WORKDIR /app/lib
+WORKDIR /app/backend
 ADD . .
 RUN chmod +x mvnw && ./mvnw clean package
 
