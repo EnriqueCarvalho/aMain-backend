@@ -1,6 +1,6 @@
 services:
   backend:
-    container_name: backend
+    container_name: aMain_backend
     image: aMain/backend:demo
     build:
       context: .
@@ -10,3 +10,19 @@ services:
     ports:
       - 8090:8090
     restart: unless-stopped
+
+  postgres:
+    container_name: aMain_postgres
+    image: postgres:16.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+
+volumes:
+  postgres:
+    name: amain_postgres
