@@ -10,36 +10,35 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import br.com.amain.backend.exception.DadosInvalidosException;
+
+
+
+
 @Component
 public class JwtTokenUtil {
 
-    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
-    //private static final long JWT_EXPIRATION = 30 * 60 * 1000; //30 min
-    //private static final long JWT_EXPIRATION = 365 * 24 * 60 * 60 * 1000; //1 ano 
     private static final int JWT_REFRESH_TOKEN_LENGTH = 32;
     private static final String JWT_REFRESH_TOKEN_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@$?&!+=-";
+    private static final long JWT_EXPIRATION = 300 * 60 * 1000; //5 horas
+    private static final String KEY_STRING = "!2PxhMh%@4I^0nF!qosW+*Y0if@prM$u7Q";
 
     private final Key JWT_SECRET_KEY;
 
-    public JwtTokenUtil(@Value("${api.jwt.secret}") String jwtSecret) {
-        JWT_SECRET_KEY = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    public JwtTokenUtil() {
+        JWT_SECRET_KEY = Keys.hmacShaKeyFor(KEY_STRING.getBytes());
     }
 
-    public String generateToken(Authentication authentication, Long idUsuario, String login ) {
-        return generateToken(authentication.getName(), idUsuario, login);
+    public String generateToken(Authentication authentication, Long idPessoaCli) {
+        return generateToken(authentication.getName(), idPessoaCli);
     }
 
-    public String generateToken(String username, Long idUsuario, String login) {
-        LOGGER.log(Level.INFO, "Gerando token para o usuário: " + username);
+    public String generateToken(String username, Long idUsuario){
         long currentTimestampInMillis = System.currentTimeMillis();
         final Map<String, Object> claims = new HashMap<>();
 
@@ -49,9 +48,9 @@ public class JwtTokenUtil {
                 .setClaims(claims)
                 .setSubject(username.trim())
                 .setIssuedAt(new Date(currentTimestampInMillis))
-               // .setExpiration(new Date(currentTimestampInMillis + JWT_EXPIRATION))
+                .setExpiration(new Date(currentTimestampInMillis + JWT_EXPIRATION))
                 .signWith(JWT_SECRET_KEY)
-                .compact();
+            .compact();
 
         return token;
     }
@@ -69,8 +68,8 @@ public class JwtTokenUtil {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Long getIdUsuarioFromToken(String token) {
-        return (long) Math.round((float) getClaimFromToken(token, claims -> claims.get("idUsuario", Object.class)));
+    public Long getIdPessoaCliFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("idPessoaCli", Double.class)).longValue();
     }
 
     public Date getExpirationDateFromToken(String token) {
@@ -97,9 +96,8 @@ public class JwtTokenUtil {
     }
 
     private Boolean isTokenExpired(String token) {
-        // final Date expiration = getExpirationDateFromToken(token);
-        // return expiration.before(new Date());
-        return false;
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
     }
 
     public String getJWTFromRequest(HttpServletRequest request) {
@@ -110,4 +108,17 @@ public class JwtTokenUtil {
         return null;
     }
 
+    public Long getIdPessoaCliFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String token = bearerToken.substring(7, bearerToken.length());            
+            return getClaimFromToken(token, claims -> claims.get("idUsuario", Double.class)).longValue();
+        }
+        throw new DadosInvalidosException("Não foi possível extrair o idUsuario");
+    }
+
+
+    public String getClaimStringFromToken(String token, String key) {
+        return getClaimFromToken(token, claims -> claims.get(key, String.class));
+    }
 }

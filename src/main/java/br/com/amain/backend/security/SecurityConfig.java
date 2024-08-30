@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,18 +32,14 @@ public class SecurityConfig {
         http
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
-                //.exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(
-                                "/sie/api/auth/login", "/sie/api/auth/usuarios/ativar", "/sie/api/auth/login",
-                                "/swagger-ui/**", "/api-docs/**", "/asten-api.html", "/v3/**",
-                                "/sie/api/webhook"
-                        ).permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(                                
+                                "/swagger-ui/**", "/api-docs/**", "/asten-api.html", "/v3/**", "/sac/usuario/token"
+                        ).permitAll()  
+                        .anyRequest().authenticated()) 
                 .httpBasic(withDefaults())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-                //.addFilterAfter(siAuditorFilter(), JWTAuthenticationFilter.class);
         return http.build();
     }
 
@@ -55,21 +52,9 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-    // @Bean
-    // public PasswordEncoder passwordEncoder() {
-    //     return new BCryptPasswordEncoder();
-    // }
 
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter() {
         return new JWTAuthenticationFilter();
-    }
-
-    // @Bean
-    // public SIAuditorFilter siAuditorFilter() {
-    //     return new SIAuditorFilter();
-    // }
-
-
-    
+    }    
 }
