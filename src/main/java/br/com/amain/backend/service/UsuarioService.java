@@ -14,10 +14,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.com.amain.backend.dto.UsuarioDto;
+import br.com.amain.backend.dto.PsicologoDto;
 import br.com.amain.backend.exception.AcessoInvalidoException;
 import br.com.amain.backend.exception.ObjectNotFoundException;
+import br.com.amain.backend.model.Psicologo;
 import br.com.amain.backend.model.Usuario;
+import br.com.amain.backend.repository.PsicologoRepository;
 import br.com.amain.backend.repository.UsuarioRepository;
 
 @Service
@@ -25,6 +27,10 @@ public class UsuarioService implements UserDetailsService{
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PsicologoRepository psicologoRepository; 
+
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public UserDetails login(String email, String password){
@@ -56,15 +62,20 @@ public class UsuarioService implements UserDetailsService{
             .build();   
     }
 
-    public void cadastrarUsuario(UsuarioDto usuarioDto){  
-        try {
-            
-        
+    public void cadastrarUsuarioPsicologo(PsicologoDto psicologoDto){  
+        try { 
         Usuario usuario = new Usuario();
-        usuario.setEmail(usuarioDto.getEmail());
-        usuario.setPassword(usuarioDto.getPassword());
+        usuario.setEmail(psicologoDto.getUsuario().getEmail());
+        usuario.setPassword(psicologoDto.getUsuario().getPassword());
+        usuario.setNome(psicologoDto.getUsuario().getNome());
+        usuario.setDtNascimento(psicologoDto.getUsuario().getDtNascimento());
         usuarioRepository.save(usuario);
-        System.out.println("teste");
+
+        Psicologo psicologo = new Psicologo();
+        psicologo.setBiografia(psicologoDto.getBiografia());
+        psicologo.setCRP(psicologoDto.getCRP());
+        psicologo.setUsuario(usuario);
+        psicologoRepository.save(psicologo);
     } catch (Exception e) {
         e.printStackTrace();
         // TODO: handle exception
