@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Psicólogo", description = "Psicólogos")
 @RestController
-@RequestMapping("/api/psicologo")
+@RequestMapping("api/psicologo")
 @SecurityRequirement(name = "bearer-key")
 public class PsicologoController {
     @Autowired

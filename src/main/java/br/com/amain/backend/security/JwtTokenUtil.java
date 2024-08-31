@@ -1,10 +1,5 @@
 package br.com.amain.backend.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import br.com.amain.backend.exception.DadosInvalidosException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 
@@ -69,7 +68,7 @@ public class JwtTokenUtil {
     }
 
     public Long getIdPessoaCliFromToken(String token) {
-        return getClaimFromToken(token, claims -> claims.get("idPessoaCli", Double.class)).longValue();
+        return getClaimFromToken(token, claims -> claims.get("idUsuario", Double.class)).longValue();
     }
 
     public Date getExpirationDateFromToken(String token) {
@@ -108,7 +107,7 @@ public class JwtTokenUtil {
         return null;
     }
 
-    public Long getIdPessoaCliFromRequest(HttpServletRequest request) {
+    public Long getIdIdUsuarioFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.substring(7, bearerToken.length());            

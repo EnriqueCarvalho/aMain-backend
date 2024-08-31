@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/api-docs/**", "/asten-api.html", "/v3/**", 
                                 "api/area","/api/publicoAlvo","api/usuario/**"
                         ).permitAll()
-                        .requestMatchers("/api/psicologo/**").hasAuthority("PAC")  
+                        // .requestMatchers("api/psicologo").hasAuthority("PAC")  
                         .anyRequest().authenticated()) 
                 .httpBasic(withDefaults())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
