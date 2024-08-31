@@ -14,4 +14,5 @@ public class AuthTokenResponse {
     private String accessToken;
     private long expiresIn;
     private Psicologo psicologo;
+    private Paciente paciente;
 }

@@ -13,12 +13,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import br.com.amain.backend.dto.PacienteDto;
 import br.com.amain.backend.dto.PsicologoDto;
 import br.com.amain.backend.exception.AcessoInvalidoException;
 import br.com.amain.backend.exception.ObjectNotFoundException;
+import br.com.amain.backend.model.Paciente;
 import br.com.amain.backend.model.Psicologo;
 import br.com.amain.backend.model.Usuario;
+import br.com.amain.backend.repository.PacienteRepository;
 import br.com.amain.backend.repository.PsicologoRepository;
 import br.com.amain.backend.repository.UsuarioRepository;
 
@@ -30,6 +34,8 @@ public class UsuarioService implements UserDetailsService{
 
     @Autowired
     private PsicologoRepository psicologoRepository; 
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -62,6 +68,8 @@ public class UsuarioService implements UserDetailsService{
             .build();   
     }
 
+
+    @Transactional
     public void cadastrarUsuarioPsicologo(PsicologoDto psicologoDto){  
         try { 
         Usuario usuario = new Usuario();
@@ -74,12 +82,35 @@ public class UsuarioService implements UserDetailsService{
         Psicologo psicologo = new Psicologo();
         psicologo.setBiografia(psicologoDto.getBiografia());
         psicologo.setCRP(psicologoDto.getCRP());
+        psicologo.setAreaAtuacao(psicologoDto.getAreaAtuacao());
         psicologo.setUsuario(usuario);
         psicologoRepository.save(psicologo);
-    } catch (Exception e) {
-        e.printStackTrace();
-        // TODO: handle exception
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: handle exception
+        }
     }
+
+
+    @Transactional
+    public void cadastrarUsuarioPaciente(PacienteDto pacienteDto){  
+        try { 
+        Usuario usuario = new Usuario();
+        usuario.setEmail(pacienteDto.getUsuario().getEmail());
+        usuario.setPassword(pacienteDto.getUsuario().getPassword());
+        usuario.setNome(pacienteDto.getUsuario().getNome());
+        usuario.setDtNascimento(pacienteDto.getUsuario().getDtNascimento());
+        usuarioRepository.save(usuario);
+
+        Paciente paciente = new Paciente();
+        paciente.setPublicoAlvo(pacienteDto.getPublicoAlvo());
+        paciente.setObservacoes(pacienteDto.getObservacoes());
+        paciente.setUsuario(usuario);
+        pacienteRepository.save(paciente);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: handle exception
+        }
     }
 
     public List<Usuario> findAll(){

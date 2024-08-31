@@ -14,7 +14,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import br.com.amain.backend.dto.LoginDto;
+import br.com.amain.backend.exception.DadosInvalidosException;
 import br.com.amain.backend.model.AuthTokenResponse;
+import br.com.amain.backend.model.Paciente;
 import br.com.amain.backend.model.Psicologo;
 import br.com.amain.backend.model.Usuario;
 import br.com.amain.backend.security.JwtTokenUtil;
@@ -31,6 +33,8 @@ public class AuthService {
     private UsuarioService usuarioService;
     @Autowired
     private PsicologoService psicologoService;
+    @Autowired
+    private PacienteService pacienteService;
 
     public AuthTokenResponse gerarToken(LoginDto loginDto){
         String email = loginDto.getEmail();
@@ -38,8 +42,13 @@ public class AuthService {
         Set<GrantedAuthority> roles = new HashSet<>(); 
         Usuario usuario = usuarioService.findByEmail(email);
 
-        Psicologo psicologo = psicologoService.getPsicologoByIdUsuario(usuario.getIdUsuario());      
-            
+        Psicologo psicologo = psicologoService.getPsicologoByIdUsuario(usuario.getIdUsuario());     
+        Paciente paciente = pacienteService.findByIdUsuario(usuario.getIdUsuario());
+
+        if(psicologo != null && paciente != null){
+            throw  new DadosInvalidosException("Paciente e Psicologos inconsistentes");
+        }
+
         roles.add(new SimpleGrantedAuthority("A"));
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>(roles);
 
@@ -48,7 +57,7 @@ public class AuthService {
 
         String token = jwtTokenUtil.generateToken(authentication, usuario.getIdUsuario());
         Date expirationDate = jwtTokenUtil.getExpirationDateFromToken(token);
-        return new AuthTokenResponse(token, expirationDate.getTime(), psicologo);        
+        return new AuthTokenResponse(token, expirationDate.getTime(), psicologo, paciente);        
     } 
 
 

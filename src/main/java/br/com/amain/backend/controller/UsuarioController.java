@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.amain.backend.dto.LoginDto;
+import br.com.amain.backend.dto.PacienteDto;
 import br.com.amain.backend.dto.PsicologoDto;
 import br.com.amain.backend.model.AuthTokenResponse;
-import br.com.amain.backend.model.Usuario;
 import br.com.amain.backend.service.AuthService;
 import br.com.amain.backend.service.UsuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +31,10 @@ public class UsuarioController {
         usuarioService.cadastrarUsuarioPsicologo(psicologoDto);      
     }
 
-
+    @PostMapping("/cadastro/paciente")
+    public void cadastrarUsuario(@RequestBody PacienteDto pacienteDto){                
+        usuarioService.cadastrarUsuarioPaciente(pacienteDto);
+    }
        
     @PostMapping("/login")
     public AuthTokenResponse login(@RequestBody LoginDto loginDto ){    
