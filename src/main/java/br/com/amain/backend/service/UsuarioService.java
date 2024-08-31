@@ -2,6 +2,7 @@ package br.com.amain.backend.service;
 
 
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import br.com.amain.backend.dto.UsuarioDto;
 import br.com.amain.backend.exception.AcessoInvalidoException;
 import br.com.amain.backend.exception.ObjectNotFoundException;
 import br.com.amain.backend.model.Usuario;
@@ -54,7 +56,28 @@ public class UsuarioService implements UserDetailsService{
             .build();   
     }
 
-    public void cadastrarUsuario(Usuario usuario){
+    public void cadastrarUsuario(UsuarioDto usuarioDto){  
+        try {
+            
+        
+        Usuario usuario = new Usuario();
+        usuario.setEmail(usuarioDto.getEmail());
+        usuario.setPassword(usuarioDto.getPassword());
         usuarioRepository.save(usuario);
+        System.out.println("teste");
+    } catch (Exception e) {
+        e.printStackTrace();
+        // TODO: handle exception
+    }
+    }
+
+    public List<Usuario> findAll(){
+        return usuarioRepository.findAll();
+    }
+
+    public Usuario findByEmail(String email){
+        return usuarioRepository.findByEmail(email).orElseThrow(
+            () -> new ObjectNotFoundException("Nenhum usuário encontrado!")
+        );
     }
 }

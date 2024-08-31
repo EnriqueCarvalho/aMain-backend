@@ -34,8 +34,8 @@ public class JwtTokenUtil {
         JWT_SECRET_KEY = Keys.hmacShaKeyFor(KEY_STRING.getBytes());
     }
 
-    public String generateToken(Authentication authentication, Long idPessoaCli) {
-        return generateToken(authentication.getName(), idPessoaCli);
+    public String generateToken(Authentication authentication, Long idUsuario) {
+        return generateToken(authentication.getName(), idUsuario);
     }
 
     public String generateToken(String username, Long idUsuario){

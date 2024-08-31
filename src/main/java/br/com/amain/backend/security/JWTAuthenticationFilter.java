@@ -61,7 +61,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     //método criado para somente entrar no filtro se for uma dessas urls, caso contrário, retornará um erro instantâneamente pro usuário
     private boolean hasUrlPermida(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        return uri.contains("/sac/") ||
+        return uri.contains("/api/") ||
                 uri.contains("swagger") ||
                 uri.contains("api-docs") ||
                 uri.contains("asten-api.html") ||

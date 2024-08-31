@@ -6,22 +6,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.amain.backend.model.Usuario;
+import br.com.amain.backend.dto.LoginDto;
+import br.com.amain.backend.dto.UsuarioDto;
+import br.com.amain.backend.model.AuthTokenResponse;
+import br.com.amain.backend.service.AuthService;
 import br.com.amain.backend.service.UsuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Tag(name = "Usuário", description = "Autenticação de usuários")
 @RestController
-@RequestMapping("/v1/api/usuario")
+@RequestMapping("/api/usuario")
 public class UsuarioController {
     
     @Autowired 
     private UsuarioService usuarioService;
+    @Autowired
+    private AuthService authService;
 
     
-    @PostMapping
-    public void cadastrarUsuario(@RequestBody Usuario usuario){
-        usuarioService.cadastrarUsuario(usuario);
+    @PostMapping("/cadastrar")
+    public void cadastrarUsuario(@RequestBody UsuarioDto usuarioDto){
+    
+            
+            usuarioService.cadastrarUsuario(usuarioDto);
+      
+    }
+
+
+       
+    @PostMapping("/login")
+    public AuthTokenResponse login(@RequestBody LoginDto loginDto ){    
+        return authService.gerarToken(loginDto);
     }
 }
