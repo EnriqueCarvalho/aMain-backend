@@ -33,8 +33,10 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(                                
-                                "/swagger-ui/**", "/api-docs/**", "/asten-api.html", "/v3/**", "/api/**"
-                        ).permitAll()  
+                                "/swagger-ui/**", "/api-docs/**", "/asten-api.html", "/v3/**", 
+                                "api/area","/api/publicoAlvo","api/usuario/**"
+                        ).permitAll()
+                        .requestMatchers("/api/psicologo/**").hasAuthority("PAC")  
                         .anyRequest().authenticated()) 
                 .httpBasic(withDefaults())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

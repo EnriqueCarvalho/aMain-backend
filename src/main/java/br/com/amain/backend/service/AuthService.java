@@ -49,7 +49,11 @@ public class AuthService {
             throw  new DadosInvalidosException("Paciente e Psicologos inconsistentes");
         }
 
-        roles.add(new SimpleGrantedAuthority("A"));
+        if(psicologo != null){
+            roles.add(new SimpleGrantedAuthority("PSI"));
+        }else{
+            roles.add(new SimpleGrantedAuthority("PAC"));
+        }
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>(roles);
 
         Authentication authentication  = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password, grantedAuthorities));

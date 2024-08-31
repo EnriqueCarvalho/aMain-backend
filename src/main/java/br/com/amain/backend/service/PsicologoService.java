@@ -1,5 +1,7 @@
 package br.com.amain.backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +16,9 @@ public class PsicologoService {
     
     public Psicologo getPsicologoByIdUsuario(Long idUsuario){
         return psicologoRepository.findByIdUsuario(idUsuario);
+    }
+
+    public List<Psicologo> findAll(){
+        return psicologoRepository.findAll();
     }
 }
