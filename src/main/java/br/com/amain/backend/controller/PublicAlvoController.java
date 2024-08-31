@@ -1,8 +1,14 @@
 package br.com.amain.backend.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.amain.backend.model.PublicoAlvo;
+import br.com.amain.backend.service.PublicoAlvoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 
@@ -11,11 +17,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/publicoAlvo")
 public class PublicAlvoController {
 
-    // @Autowired
-    // private
+    @Autowired
+    private PublicoAlvoService publicoAlvoService;
     
-    // @GetMapping
-    // public List<PublicoAlvo> findAll() {
-    //     return areaAtuacaoService.getAreas();
-    // }
+    @GetMapping
+    public List<PublicoAlvo> findAll() {
+        return publicoAlvoService.findAll();
+    }
 }
