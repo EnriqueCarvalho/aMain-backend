@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.amain.backend.dto.LoginDto;
 import br.com.amain.backend.model.AuthTokenResponse;
+import br.com.amain.backend.model.Psicologo;
 import br.com.amain.backend.model.Usuario;
 import br.com.amain.backend.security.JwtTokenUtil;
 
@@ -28,20 +29,26 @@ public class AuthService {
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private PsicologoService psicologoService;
 
     public AuthTokenResponse gerarToken(LoginDto loginDto){
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
-        Set<GrantedAuthority> roles = new HashSet<>();           
+        Set<GrantedAuthority> roles = new HashSet<>(); 
+        Usuario usuario = usuarioService.findByEmail(email);
+
+        Psicologo psicologo = psicologoService.getPsicologoByIdUsuario(usuario.getIdUsuario());      
+            
         roles.add(new SimpleGrantedAuthority("A"));
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>(roles);
 
         Authentication authentication  = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password, grantedAuthorities));
-        Usuario usuario = usuarioService.findByEmail(email);
+        
 
         String token = jwtTokenUtil.generateToken(authentication, usuario.getIdUsuario());
         Date expirationDate = jwtTokenUtil.getExpirationDateFromToken(token);
-        return new AuthTokenResponse(token, expirationDate.getTime());        
+        return new AuthTokenResponse(token, expirationDate.getTime(), psicologo);        
     } 
 
 
