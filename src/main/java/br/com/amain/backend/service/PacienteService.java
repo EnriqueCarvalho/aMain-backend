@@ -21,6 +21,14 @@ public class PacienteService {
             () -> new ObjectNotFoundException("Nenhum paciente encontrado")
         );
     }
+
+    public Paciente findByIdUsuarioThrow(Long idUsuario){
+        Paciente paciente = pacienteRepository.findByIdUsuario(idUsuario);
+        if(paciente == null ){
+            throw new ObjectNotFoundException("Nenhum paciente encontrado");
+        }
+        return paciente;
+    }
  
     
 

@@ -1,11 +1,16 @@
 package br.com.amain.backend.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.amain.backend.dto.ConsultaDto;
+import br.com.amain.backend.model.Consultas;
 import br.com.amain.backend.security.JwtTokenUtil;
 import br.com.amain.backend.service.ConsultaService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,9 +30,15 @@ public class ConsultaController {
     private ConsultaService consultaService;
 
     @PostMapping("/nova")
-    private void criarConsulta(HttpServletRequest request, ConsultaDto consultaDto){
+    public Consultas criarConsulta(HttpServletRequest request, @RequestBody ConsultaDto consultaDto){
         Long idUsuario = jwtTokenUtil.getIdIdUsuarioFromRequest(request);
-        
+        return consultaService.criarConsulta(consultaDto, idUsuario);
+    }
+
+    @GetMapping
+    public List<Consultas> findbyIdUsuario(HttpServletRequest request){
+        Long idUsuario = jwtTokenUtil.getIdIdUsuarioFromRequest(request);
+        return consultaService.findByIdUsuario(idUsuario);
     }
     
 }
