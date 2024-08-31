@@ -18,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.amain.backend.dto.PacienteDto;
 import br.com.amain.backend.dto.PsicologoDto;
 import br.com.amain.backend.exception.AcessoInvalidoException;
+import br.com.amain.backend.exception.DadosInvalidosException;
 import br.com.amain.backend.exception.ObjectNotFoundException;
 import br.com.amain.backend.model.Paciente;
 import br.com.amain.backend.model.Psicologo;
+import br.com.amain.backend.model.PublicoAlvo;
 import br.com.amain.backend.model.Usuario;
 import br.com.amain.backend.repository.PacienteRepository;
 import br.com.amain.backend.repository.PsicologoRepository;
+import br.com.amain.backend.repository.PublicoAlvoRepository;
 import br.com.amain.backend.repository.UsuarioRepository;
 
 @Service
@@ -36,6 +39,8 @@ public class UsuarioService implements UserDetailsService{
     private PsicologoRepository psicologoRepository; 
     @Autowired
     private PacienteRepository pacienteRepository;
+    @Autowired
+    private PublicoAlvoRepository publicoAlvoRepository;
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -55,6 +60,8 @@ public class UsuarioService implements UserDetailsService{
     }
 
 
+
+
     public UserDetails validarUsuario(String email, String password, Collection<? extends GrantedAuthority> authorities){  
         LOGGER.log(Level.INFO, "Validando usuario: {0}", email);     
         Usuario usuario = usuarioRepository.findByEmailAndPassword(email, password).orElseThrow(
@@ -71,6 +78,9 @@ public class UsuarioService implements UserDetailsService{
 
     @Transactional
     public void cadastrarUsuarioPsicologo(PsicologoDto psicologoDto){  
+        if(usuarioRepository.findByEmailNull(psicologoDto.getUsuario().getEmail()) != null){
+            throw new DadosInvalidosException("Usuário já cadastrado!");
+        }
         try { 
         Usuario usuario = new Usuario();
         usuario.setEmail(psicologoDto.getUsuario().getEmail());
@@ -92,8 +102,11 @@ public class UsuarioService implements UserDetailsService{
     }
 
 
-    @Transactional
+
     public void cadastrarUsuarioPaciente(PacienteDto pacienteDto){  
+        if(usuarioRepository.findByEmailNull(pacienteDto.getUsuario().getEmail()) != null){
+            throw new DadosInvalidosException("Usuário já cadastrado!");
+        }
         try { 
         Usuario usuario = new Usuario();
         usuario.setEmail(pacienteDto.getUsuario().getEmail());
@@ -103,7 +116,10 @@ public class UsuarioService implements UserDetailsService{
         usuarioRepository.save(usuario);
 
         Paciente paciente = new Paciente();
-        paciente.setPublicoAlvo(pacienteDto.getPublicoAlvo());
+        PublicoAlvo publicoAlvo = publicoAlvoRepository.findById(pacienteDto.getIdPublicoAlvo()).orElseThrow(
+            () -> new ObjectNotFoundException("não encontrado")
+        );
+        paciente.setPublicoAlvo(publicoAlvo);
         paciente.setObservacoes(pacienteDto.getObservacoes());
         paciente.setUsuario(usuario);
         pacienteRepository.save(paciente);
