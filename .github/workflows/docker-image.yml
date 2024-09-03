@@ -23,4 +23,7 @@ jobs:
 
     - name: Push the Docker images
       run: docker push ghcr.io/enriquecarvalho/amain-backend:latest
-
+    
+    - name: Trigger update
+      run: |
+        curl -v -H "Authorization: Bearer '8&^TUs0E8^%7#%m^2%p9'" 168.75.103.41:9090/v1/update
