@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "cicd" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "cicd" ]
 
 jobs:
   build-and-push:
@@ -25,4 +25,5 @@ jobs:
       run: docker push ghcr.io/enriquecarvalho/amain-backend:latest
     
     - name: Trigger update
-      run: curl -v -H "Authorization: Bearer teste-api" 168.75.103.41:9090/v1/update
+      run: |
+        curl -v -H "Authorization: Bearer teste-api" 168.75.103.41:9090/v1/update
